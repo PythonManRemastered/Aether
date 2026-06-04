@@ -1,0 +1,6 @@
+set x be 10
+set y be 20
+
+show x plus y
+
+show "Aether " joined with "works"
