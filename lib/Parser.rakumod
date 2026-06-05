@@ -81,6 +81,57 @@ method parse(Str $source) {
             $i++;
             next;
         }
+        if $line.starts-with('WHILE ') {
+
+            my $condition =
+
+            $line.substr(6)
+                .trim;
+
+            if $condition.lc.ends-with(' do') {
+
+                $condition =
+                    $condition.substr(
+                        0,
+                        $condition.chars - 3
+                    ).trim;
+            }
+            my @body;
+            loop {
+
+                $i++;
+
+                die "Missing ENDWHILE"
+                    if $i >= @lines.elems;
+
+                my $next =
+                    @lines[$i].trim;
+
+                if $next eq 'ENDWHILE' {
+                    last;
+                }
+
+                my $stmt =
+                    self.parse($next);
+
+                @body.push(
+                    $stmt.statements[0]
+                );
+            }
+
+            @statements.push(
+
+                AetherAST::WhileStatement.new(
+
+                    condition => $condition,
+
+                    body => @body
+                )
+            );
+
+            $i++;
+            next;
+        }
 
         # -------------------------
         # OUTPUT
@@ -146,4 +197,5 @@ method parse(Str $source) {
     AetherAST::Program.new(
         statements => @statements
     );
+
 }

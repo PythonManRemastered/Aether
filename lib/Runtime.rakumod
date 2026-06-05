@@ -66,6 +66,21 @@ method execute(AetherAST::Program $program) {
                     );
                 }
             }
+            when AetherAST::WhileStatement {
+
+               while self!evaluate($stmt.condition) {
+
+                    my $program =
+                        AetherAST::Program.new(
+                            statements =>
+                            $stmt.body
+                        );
+
+                    self.execute(
+                        $program
+                    );
+                }
+            }
 
         }
     }
@@ -73,12 +88,16 @@ method execute(AetherAST::Program $program) {
 
 method !evaluate($expr) {
 
-    my $text = $expr.Str.trim;
+    my $text = 
+    $expr.Str.trim;
 
     if $text.contains(">") {
 
         my ($left,$right)
             = $text.split(">",2);
+
+        $left  = $left.trim;
+        $right = $right.trim;
 
         return
             self!evaluate($left)
@@ -107,6 +126,28 @@ method !evaluate($expr) {
             eq
             self!evaluate($right);
     }
+    if $text.contains("-") {
+
+        my ($left,$right)
+            = $text.split("-",2);
+
+        return
+            self!evaluate($left)
+            -
+            self!evaluate($right);
+    }
+
+    if $text.contains("+") {
+
+     my ($left,$right)
+        = $text.split("+",2);
+
+    return
+        self!evaluate($left)
+        +
+            self!evaluate($right);
+    }
+
 
     if $text.starts-with('"')
     && $text.ends-with('"') {

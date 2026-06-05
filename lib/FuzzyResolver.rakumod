@@ -1,5 +1,28 @@
 unit class FuzzyResolver;
 
+my @KEYWORDS = (
+
+    'OUTPUT',
+    'INPUT',
+
+    'IF',
+    'THEN',
+    'ELSE',
+    'ENDIF',
+
+    'WHILE',
+    'DO',
+    'ENDWHILE',
+
+    'FOR',
+    'TO',
+    'STEP',
+    'NEXT',
+
+    'REPEAT',
+    'UNTIL'
+);
+
 sub levenshtein(Str $a, Str $b --> Int) {
 
     my @left = $a.comb;
@@ -201,31 +224,38 @@ method normalize(Str $source --> Str) {
 
     my @out;
 
-    for $source.lines -> $raw-line {
+    for $source.lines -> $line {
 
-        my $line = $raw-line;
+        my $new = $line;
 
-        if $line ~~ /^ (\s*) (\S+) (.*) $/ {
+        #
+        # assignment?
+        #
 
-            my $indent =
-                ~$0;
+        if $line.contains('←') {
 
-            my $first =
-                ~$1;
-
-            my $rest =
-                ~$2;
-
-            my $fixed =
-                self!closest($first);
-
-            $line =
-                $indent
-                ~ $fixed
-                ~ $rest;
+            @out.push($line);
+            next;
         }
 
-        @out.push($line);
+        #
+        # statement with words
+        #
+
+        my @words = $line.words;
+
+        if @words {
+
+            @words[0] =
+                self!closest(
+                    @words[0]
+                );
+
+            $new =
+                @words.join(' ');
+        }
+
+        @out.push($new);
     }
 
     @out.join("\n");

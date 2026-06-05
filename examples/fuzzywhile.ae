@@ -1,0 +1,6 @@
+cnt ← 3
+
+whlie cnt > 0 do
+outpt cnt
+cnt ← cnt - 1
+endwhlie

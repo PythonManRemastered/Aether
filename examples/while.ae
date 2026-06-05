@@ -1,0 +1,6 @@
+Count ← 5
+
+WHILE Count > 0 DO
+OUTPUT Count
+Count ← Count - 1
+ENDWHILE
